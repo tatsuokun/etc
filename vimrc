@@ -87,6 +87,7 @@ if s:plug.ready()
     Plug 'airblade/vim-gitgutter'
     Plug 'easymotion/vim-easymotion'
     Plug 'kana/vim-smartchr', {'on': []}
+    Plug 'scrooloose/syntastic'
 
 
     " colorscheme
@@ -280,7 +281,7 @@ if s:plug.is_installed("vim-easymotion")
 endif
 
 if s:plug.is_installed("vim-smartchr")
-    inoremap <buffer> <expr> , smartchr#loop(', ', ',')
+    " inoremap <buffer> <expr> , smartchr#loop(', ', ',')
 endif
 
 if s:plug.is_installed("vim-airline")
@@ -296,10 +297,28 @@ if s:plug.is_installed("vim-airline")
     let g:airline#extensions#tabline#buffer_min_count = 1
 endif
 
+
+if s:plug.is_installed("syntastic")
+    let g:syntastic_python_checkers = ['flake8']
+    let g:syntastic_python_flake8_args="--max-line-length=100"
+    set statusline+=%#warningmsg#
+    set statusline+=%{SyntasticStatuslineFlag()}
+    set statusline+=%*
+
+    let g:syntastic_always_populate_loc_list = 1
+    let g:syntastic_auto_loc_list = 1
+    let g:syntastic_check_on_open = 1
+    let g:syntastic_check_on_wq = 0
+endif
+
+
 if s:plug.is_installed("jellybeans.vim")
     " set colorscheme jellybeans"
     colorscheme jellybeans
 endif
+
+
+
 
 " search settings
 " don't care about uppercase or lowercase
