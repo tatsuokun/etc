@@ -1,4 +1,4 @@
-let $PATH = "~/.pyenv/shims:".$PATH
+let $PATH = "~/local/pyenv/shims:".$PATH
 if 0 | endif
 
 " when vim was invoked by 'sudo' command
@@ -300,15 +300,20 @@ endif
 
 if s:plug.is_installed("syntastic")
     let g:syntastic_python_checkers = ['flake8']
-    let g:syntastic_python_flake8_args="--max-line-length=100"
+    let g:syntastic_python_flake8_args="--max-line-length=120"
     set statusline+=%#warningmsg#
     set statusline+=%{SyntasticStatuslineFlag()}
     set statusline+=%*
 
+    let g:syntastic_loc_list_height = 5
     let g:syntastic_always_populate_loc_list = 1
     let g:syntastic_auto_loc_list = 1
     let g:syntastic_check_on_open = 1
     let g:syntastic_check_on_wq = 0
+    let g:syntastic_error_symbol = '☠'
+    let g:syntastic_style_error_symbol = '☠'
+    let g:syntastic_warning_symbol = '⚠'
+    let g:syntastic_style_warning_symbol = '⚠'
 endif
 
 
