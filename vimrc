@@ -1,4 +1,4 @@
-let $PATH = "~/local/pyenv/shims:".$PATH
+let $PATH = "/home/ubuntu/anaconda3/bin/".$PATH
 if 0 | endif
 
 " when vim was invoked by 'sudo' command
@@ -16,7 +16,6 @@ function! s:vimrc_environment()
 
   let env.is_starting = has('vim_starting')
 
-  " vim
   let vimpath = expand('~/.vim')
 
   let env.path = {
@@ -26,7 +25,6 @@ function! s:vimrc_environment()
   return env
 endfunction
 
-" s:env is an environment variable in vimrc
 let s:env   = s:vimrc_environment()
 let s:true  = 1
 let s:false = 0
@@ -45,29 +43,24 @@ if s:env.is_starting
   augroup END
 endif
 
-" vim-plug
 let s:plug = {
       \ "plug": expand(s:env.path.vim) . "/autoload/plug.vim",
       \ "base": expand(s:env.path.vim) . "/plugged",
       \ "url": "https://raw.github.com/junegunn/vim-plug/master/plug.vim",
       \ }
 
-" check if there is plug.vim
 function! s:plug.ready()
   return filereadable(self.plug)
 endfunction
 
 if s:plug.ready()
-    " start to manage with vim-plug
     call plug#begin(s:plug.base)
 
     Plug 'Shougo/vimproc', {'do': 'make'}
 
-    " file and directory
     Plug 'Shougo/vimfiler', {'on': ['VimFilerTab', 'VimFiler', 'VimFilerExplorer']}
     Plug 'Shougo/unite.vim'
 
-    " compl
     Plug 'tpope/vim-fugitive'
     if has('lua')
         Plug 'Shougo/neocomplete.vim', {'on': []}
@@ -94,7 +87,6 @@ if s:plug.ready()
     Plug 'altercation/vim-colors-solarized'
     Plug 'nanotech/jellybeans.vim'
 
-    " statusline
     Plug 'vim-airline/vim-airline'
     Plug 'vim-airline/vim-airline-themes'
 
@@ -106,20 +98,17 @@ if s:plug.ready()
 
     call plug#end()
 else
-    " install vim-plug
     function! s:plug.init()
         let ret = system(printf("curl -fLo %s --create-dirs %s", self.plug, self.url))
         if v:shell_error
             echomsg 's:plug_init: error occured'
             return 1
         endif
-        " Restart vim
         silent! !vim
         quit!
     endfunction
 
     command! PlugInit call s:plug.init()
-    " install vim-plug
     PlugInit
 endif
 
@@ -127,7 +116,6 @@ endif
 let s:plug.plugs = get(g:, 'plugs', {})
 let s:plug.list = keys(s:plug.plugs)
 
-" plugin helper functions
 function! s:plug.is_installed(name)
   return has_key(self.plugs, a:name) ? isdirectory(self.plugs[a:name].dir) : 0
 endfunction
@@ -146,24 +134,21 @@ function! s:plug.check_installation()
 
     if len(list) > 0
         let unplugged = map(list, 'substitute(v:val, "^.*github\.com/\\(.*/.*\\)\.git$", "\\1", "g")')
-        " Ask whether installing plugs like NeoBundle
         echomsg 'Not installed plugs: ' . string(unplugged)
         if confirm('Install plugs now?', "yes\nNo", 2) == 1
             PlugInstall
-            " Close window for vim-plug
             silent! close
-             " Restart vim
             silent! !vim
             quit!
         endif
     endif
 endfunction
 
-"function! s:plug.check_update()
-"    PlugUpdate
-"    PlugUpgrade
-"    silent! close
-"endfunction
+function! s:plug.check_update()
+    PlugUpdate
+    PlugUpgrade
+    silent! close
+endfunction
 
 function! s:has_plugin(name)
   " Check {name} plugin whether there is in the runtime path
@@ -199,19 +184,10 @@ if s:plug.is_installed("neocomplete.vim")
     let g:neocomplete#enable_underbar_completion = 1
     let g:neocomplete#enable_fuzzy_completion = 1
     let g:neocomplete#sources#syntax#min_keyword_length = 3
-    let g:neocomplete#auto_completion_start_length = 2
+    let g:neocomplete#auto_completion_start_length = 3
     let g:neocomplete#manual_completion_start_length = 0
     let g:neocomplete#min_keyword_length = 3
-    if !exists('g:neocomplete#force_omni_input_patterns')
-      let g:neocomplete#force_omni_input_patterns = {}
-    endif
     let g:jedi#auto_vim_configuration = 0
-    let g:neocomplete#sources#omni#input_patterns = {
-          \ 'ruby' : '[^. *\t]\.\w*\|\h\w*::',
-          \}
-    let g:neocomplete#force_omni_input_patterns = {
-          \ 'python': '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*'
-          \}
 
     let g:neocomplete#enable_auto_delimiter = 1
     let g:neocomplete#disable_auto_select_buffer_name_pattern =
@@ -223,22 +199,9 @@ if s:plug.is_installed("neocomplete.vim")
     if !exists('g:neocomplete#sources#omni#functions')
       let g:neocomplete#sources#omni#functions = {}
     endif
-    if !exists('g:neocomplete#force_omni_input_patterns')
-      let g:neocomplete#force_omni_input_patterns = {}
-    endif
     let g:neocomplete#enable_auto_close_preview = 1
-
-    let g:neocomplete#force_omni_input_patterns.markdown =
-          \ ':\w*'
-    let g:neocomplete#force_omni_input_patterns.ruby =
-          \ '[^. *\t]\.\w*\|\h\w*::\w*'
-
-    let g:neocomplete#force_omni_input_patterns.python =
-          \ '\%([^. \t]\.\|^\s*@\|^\s*from\s.\+import \|^\s*from \|^\s*import \)\w*'
-
     let g:neocomplete#sources#omni#functions.go =
           \ 'gocomplete#Complete'
-
     let g:neocomplete#sources#omni#input_patterns.php =
           \'\h\w*\|[^. \t]->\%(\h\w*\)\?\|\h\w*::\%(\h\w*\)\?'
     let g:neocomplete#fallback_mappings = ["\<C-x>\<C-o>", "\<C-x>\<C-n>"]
@@ -251,7 +214,7 @@ if s:plug.is_installed("neocomplcache.vim")
     let g:neocomplcache_min_syntax_length = 3
     autocmd FileType html,markdown setlocal omnifunc=htmlcomplete#CompleteTags
     autocmd FileType javascript setlocal omnifunc=javascriptcomplete#CompleteJS
-    autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
+    " autocmd FileType python setlocal omnifunc=pythoncomplete#Complete
 endif
 
 if s:plug.is_installed("jedi-vim")
@@ -305,15 +268,10 @@ if s:plug.is_installed("syntastic")
     set statusline+=%{SyntasticStatuslineFlag()}
     set statusline+=%*
 
-    let g:syntastic_loc_list_height = 5
     let g:syntastic_always_populate_loc_list = 1
     let g:syntastic_auto_loc_list = 1
     let g:syntastic_check_on_open = 1
     let g:syntastic_check_on_wq = 0
-    let g:syntastic_error_symbol = '☠'
-    let g:syntastic_style_error_symbol = '☠'
-    let g:syntastic_warning_symbol = '⚠'
-    let g:syntastic_style_warning_symbol = '⚠'
 endif
 
 
